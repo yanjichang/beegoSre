@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Ohimma/beegoSre/models"
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_ApiAdmin/models"
 )
 
 type CodeController struct {

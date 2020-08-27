@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Ohimma/beegoSre/libs"
+	"github.com/Ohimma/beegoSre/models"
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_ApiAdmin/libs"
-	"github.com/george518/PPGo_ApiAdmin/models"
 )
 
 type AdminController struct {

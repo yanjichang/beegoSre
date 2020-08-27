@@ -1,8 +1,8 @@
 package routers
 
 import (
+	"github.com/Ohimma/beegoSre/controllers"
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_ApiAdmin/controllers"
 )
 
 func init() {
