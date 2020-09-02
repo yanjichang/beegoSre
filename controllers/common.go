@@ -8,21 +8,30 @@
 package controllers
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
 	"github.com/Ohimma/beegoSre/libs"
 	"github.com/Ohimma/beegoSre/utils"
+	"golang.org/x/text/encoding/simplifiedchinese"
 
 	"github.com/Ohimma/beegoSre/models"
 	"github.com/astaxie/beego"
 	cache "github.com/patrickmn/go-cache"
 )
 
+type Charset string
+
 const (
 	MSG_OK  = 0
 	MSG_ERR = -1
+
+	UTF8    = Charset("UTF-8")
+	GB18030 = Charset("GB18030")
 )
 
 type BaseController struct {
@@ -50,7 +59,7 @@ func (self *BaseController) Prepare() {
 	self.Data["curAction"] = self.actionName
 	// noAuth := "ajaxsave/ajaxdel/table/loginin/loginout/getnodes/start"
 	// isNoAuth := strings.Contains(noAuth, self.actionName)
-	fmt.Println(self.controllerName)
+	fmt.Println("c conmmon preprare self.controllerName ==== ", self.controllerName)
 	if (strings.Compare(self.controllerName, "apidoc")) != 0 {
 		self.auth()
 	}
@@ -105,14 +114,17 @@ func (self *BaseController) auth() {
 
 func (self *BaseController) AdminAuth() {
 	cheMen, found := utils.Che.Get("menu" + strconv.Itoa(self.user.Id))
+	fmt.Printf("c comon adminauth chemen==%v  found=%v\n", cheMen, found)
+
 	if found && cheMen != nil { //从缓存取菜单
+		fmt.Println("缓存 内调用显示菜单")
 		menu := cheMen.(*CheMenu)
-		//fmt.Println("调用显示菜单")
 		self.Data["SideMenu1"] = menu.List1 //一级菜单
 		self.Data["SideMenu2"] = menu.List2 //二级菜单
 		self.allowUrl = menu.AllowUrl
 	} else {
 		// 左侧导航栏
+		fmt.Println("数据库 内调用显示菜单")
 		filters := make([]interface{}, 0)
 		filters = append(filters, "status", 1)
 		if self.userId != 1 {
@@ -154,6 +166,7 @@ func (self *BaseController) AdminAuth() {
 		}
 		self.Data["SideMenu1"] = list[:i]  //一级菜单
 		self.Data["SideMenu2"] = list2[:j] //二级菜单
+		fmt.Println("c comon admin menu.List1 == ", self.Data["SideMenu1"])
 
 		self.allowUrl = allow_url + "/home/index"
 		cheM := &CheMenu{}
@@ -195,185 +208,85 @@ func (self *BaseController) display(tpl ...string) {
 	if len(tpl) > 0 {
 		tplname = strings.Join([]string{tpl[0], "html"}, ".")
 	} else {
-		tplname = self.controllerName + "/" + self.actionName + ".html"
+		tplname = self.controllerName + "_" + self.actionName + ".html"
 	}
-	self.Layout = "public/layout.html"
+	self.Layout = "public/layout2.html"
 	self.TplName = tplname
+	fmt.Println("tplname == ", tplname, "layout == ", self.Layout)
 }
 
-//ajax返回
+//ajax 返回消息和状态
 func (self *BaseController) ajaxMsg(msg interface{}, msgno int) {
 	out := make(map[string]interface{})
 	out["status"] = msgno
 	out["message"] = msg
+	// out["msg"] = msg
 	self.Data["json"] = out
 	self.ServeJSON()
 	self.StopRun()
 }
 
-//ajax返回 列表
+//ajax 返回 code + 状态 + 数量 + 列表数据
 func (self *BaseController) ajaxList(msg interface{}, msgno int, count int64, data interface{}) {
 	out := make(map[string]interface{})
 	out["code"] = msgno
+	// out["status"] = msgno
 	out["msg"] = msg
 	out["count"] = count
 	out["data"] = data
 	self.Data["json"] = out
 	self.ServeJSON()
 	self.StopRun()
+	fmt.Println("ajaxlist json == ", self.Data["json"], "self == ", self)
 }
 
-//分组公共方法
-type groupList struct {
-	Id        int
-	GroupName string
-}
+// 执行shell 命令
 
-// 返回 结构体切片
-func groupLists() (gl []groupList) {
-	// make 一个接口类新的切片，长度为0
-	groupFilters := make([]interface{}, 0)
-	fmt.Println("aaaaaaa", groupFilters)
-	groupFilters = append(groupFilters, "status", 1)
-	fmt.Println("groupFilters = ", groupFilters)
-
-	// 获取group列表，获取一页，每页1000，接口数据是 [status 1]
-	groupResult, _ := models.GroupGetList(1, 1000, groupFilters...)
-
-	fmt.Println("groupResult = ", groupResult)
-	for _, gv := range groupResult {
-		groupRow := groupList{}
-		groupRow.Id = int(gv.Id)
-		groupRow.GroupName = gv.GroupName
-		gl = append(gl, groupRow)
+//对字符进行转码 cmd 窗口会乱码
+func ConvertByte2String(byte []byte, charset Charset) string {
+	var str string
+	switch charset {
+	case GB18030:
+		var decodeBytes, _ = simplifiedchinese.GB18030.NewDecoder().Bytes(byte)
+		str = string(decodeBytes)
+	case UTF8:
+		fallthrough
+	default:
+		str = string(byte)
 	}
-	fmt.Println("groupList gl = ", gl)
-	return gl
+	return str
 }
 
-//获取单个分组信息
-func getGroupInfo(gl []groupList, groupId int) (groupInfo groupList) {
-	for _, v := range gl {
-		if v.Id == groupId {
-			groupInfo = v
-		}
+func (self *BaseController) exec_shell(s string) ([]string, error) {
+	//函数返回一个*Cmd，用于使用给出的参数执行name指定的程序
+	// cmd := exec.Command("/bin/bash", "-c", s)
+	// cmd := exec.Command(s)
+	cmd := exec.Command("ping", "www.baidu.com")
+
+	fmt.Println("CmdAndChangeDir", cmd.Dir, cmd.Args)
+	// fmt.Printf("执行命令: %s\n", strings.Join(cmd.Args[1:], " "))
+
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "error===>", err.Error())
 	}
-	return
-}
-
-type sourceList struct {
-	Id         int
-	SourceName string
-	GroupId    int
-	GroupName  string
-}
-
-func sourceLists() (sl []sourceList) {
-
-	grouplists := groupLists()
-	var groupinfo groupList
-	sourceFilters := make([]interface{}, 0)
-	sourceFilters = append(sourceFilters, "status", 1)
-	sourceResult, _ := models.ApiSourceGetList(1, 1000, sourceFilters...)
-	for _, sv := range sourceResult {
-		sourceRow := sourceList{}
-		sourceRow.Id = int(sv.Id)
-		sourceRow.GroupId = sv.GroupId
-		groupinfo = getGroupInfo(grouplists, sv.GroupId)
-		sourceRow.GroupName = groupinfo.GroupName
-		sourceRow.SourceName = sv.SourceName
-		sl = append(sl, sourceRow)
+	err = cmd.Start()
+	if err != nil {
+		fmt.Println("c common cmd start err == ", err)
 	}
-	return sl
-}
 
-func getSourceInfo(gl []sourceList, sourceId int) (sourceInfo sourceList) {
-	for _, v := range gl {
-		if v.Id == sourceId {
-			sourceInfo = v
-		}
+	var contentArray = make([]string, 0, 5)
+	in := bufio.NewScanner(stdout)
+	for in.Scan() {
+		line := ConvertByte2String(in.Bytes(), "GB18030")
+		fmt.Println(line)
+		contentArray = append(contentArray, line)
 	}
-	return
-}
 
-type envList struct {
-	Id      int
-	EnvName string
-	EnvHost string
-}
-
-func envLists() (sl []envList) {
-	envFilters := make([]interface{}, 0)
-	envFilters = append(envFilters, "status__in", 1)
-	envResult, _ := models.EnvGetList(1, 1000, envFilters...)
-	for _, sv := range envResult {
-		envRow := envList{}
-		envRow.Id = int(sv.Id)
-		envRow.EnvName = sv.EnvName
-		envRow.EnvHost = sv.EnvHost
-		sl = append(sl, envRow)
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Println("c common cmd wait err == ", err)
 	}
-	return sl
-}
 
-type templateList struct {
-	Id           int
-	TemplateName string
-	Detail       string
-}
-
-func templateLists() (sl []templateList) {
-	templateFilters := make([]interface{}, 0)
-	templateFilters = append(templateFilters, "status", 1)
-	templateResult, _ := models.TemplateGetList(1, 1000, templateFilters...)
-	for _, sv := range templateResult {
-		templateRow := templateList{}
-		templateRow.Id = int(sv.Id)
-		templateRow.TemplateName = sv.TemplateName
-		templateRow.Detail = sv.Detail
-		sl = append(sl, templateRow)
-	}
-	return sl
-}
-
-type codeList struct {
-	Id     int
-	Code   string
-	Desc   string
-	Detail string
-}
-
-func codeLists() (sl []codeList) {
-	codeFilters := make([]interface{}, 0)
-	codeFilters = append(codeFilters, "status", 1)
-	codeResult, _ := models.CodeGetList(1, 1000, codeFilters...)
-	for _, sv := range codeResult {
-		codeRow := codeList{}
-		codeRow.Id = int(sv.Id)
-		codeRow.Code = sv.Code
-		codeRow.Desc = sv.Desc
-		codeRow.Detail = sv.Detail
-		sl = append(sl, codeRow)
-	}
-	return sl
-}
-
-type apiPublicList struct {
-	Id            int
-	ApiPublicName string
-	Sort          int
-}
-
-func apiPublicLists() (sl []apiPublicList) {
-	apiPublicFilters := make([]interface{}, 0)
-	apiPublicFilters = append(apiPublicFilters, "status", 1)
-	apiPublicResult, _ := models.ApiPublicGetList(1, 1000, apiPublicFilters...)
-	for _, sv := range apiPublicResult {
-		apiPublicRow := apiPublicList{}
-		apiPublicRow.Id = int(sv.Id)
-		apiPublicRow.ApiPublicName = sv.ApiPublicName
-		apiPublicRow.Sort = sv.Sort
-		sl = append(sl, apiPublicRow)
-	}
-	return sl
+	return contentArray, err
 }

@@ -1,0 +1,197 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
+
+    <!-- 表单 -->
+    <form class="layui-form" action="" method="post" >
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">链路名字({{.fengxuan.id}})</label>
+        <div class="layui-input-inline">
+            <input type="text" name="shortname" lay-verify="required" autocomplete="off" placeholder="vip-an-c-bwg-01" class="layui-input" value="{{.fengxuan.shortname}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    
+    <div class="layui-form-item">
+        <label class="layui-form-label">流量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="fengxuan_name" id="Fengxuan_name" lay-verify="required" autocomplete="off" placeholder="外网ip" class="layui-input" value="{{.fengxuan.fengxuan_name}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+
+        <label class="layui-form-label">网关</label>
+        <div class="layui-input-inline">
+            <input type="text" name="liuliangNW" lay-verify="required" autocomplete="off" placeholder="内网网关" class="layui-input" value="{{.fengxuan.liuliangNW}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">跨境</label>
+        <div class="layui-input-inline">
+            <input type="text" name="kuajing" id="Kuajing" lay-verify="required" autocomplete="off" placeholder="外网ip" class="layui-input" value="{{.fengxuan.kuajing}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+
+        <label class="layui-form-label">网关</label>
+        <div class="layui-input-inline">
+            <input type="text" name="kuajingNW" lay-verify="required" autocomplete="off" placeholder="内网网关" class="layui-input" value="{{.fengxuan.kuajingNW}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">海外</label>
+        <div class="layui-input-inline">
+            <input type="text" name="haiwai" lay-verify="required" autocomplete="off" placeholder="海外ip" class="layui-input" value="{{.fengxuan.haiwai}}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">*</div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">链路状态</label>
+        <div class="layui-input-block">
+            {{ if eq .fengxuan.servstate  1 }} 
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="1" title="开启" checked>
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="-1" title="智能">
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="-2" title="禁用">
+            {{ else if eq .fengxuan.servstate -2 }}
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="1" title="开启" >
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="-1" title="智能">
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="-2" title="禁用" checked> 
+            {{ else }}
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="1" title="开启" >
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="-1" title="智能" checked>
+            <input type="radio" name="servstate" lay-filter="on-off" lay-verify="otherReq" value="-2" title="禁用">
+            {{ end }}
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">流量服务</label>
+        <div class="layui-input-block">
+          {{ if eq .fengxuan.type "ss" }} 
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="1" title="ss" checked>
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="2" title="ssr">
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="3" title="nginx">
+          {{ else if eq .fengxuan.type  "nginx" }}
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="1" title="ss" >
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="2" title="ssr">
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="3" title="nginx" checked>
+          {{ else }}
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="1" title="ss" >
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="2" title="ssr" checked>
+          <input type="radio" name="service" lay-filter="service" lay-verify="otherReq" value="3" title="nginx" >
+          {{end}}
+        </div>
+    </div>
+
+
+    <div class="layui-form-item ss" >
+        <label class="layui-form-label">ports</label>
+        <div class="layui-input-inline">
+            <input type="text" name="ports" sautocomplete="off" placeholder="ss/ssr" class="layui-input" value="{{.fengxuan.ports}}">
+        </div>
+        <label class="layui-form-label">Secret</label>
+        <div class="layui-input-inline">
+            <input type="text" name="secret" autocomplete="off" placeholder="Secret" class="layui-input" value="{{.fengxuan.secret}}">
+        </div>
+        <label class="layui-form-label">Starospassword</label>
+        <div class="layui-input-inline">
+            <input type="text" name="starospassword"  autocomplete="off" placeholder="starospassword" class="layui-input" value="{{.fengxuan.starospassword}}">
+        </div>
+    </div>
+
+    <div class="layui-form-item nginx" style="display:none;">
+        <label class="layui-form-label">ports</label>
+        <div class="layui-input-inline">
+            <input type="text" name="ports" autocomplete="off" placeholder="nginx" class="layui-input" value="{{.fengxuan.ports}}">
+        </div>
+    </div>
+
+    
+    <!-- <input type="hidden" value="" id="roleids" name="roleids"> -->
+    <input type="hidden" id="id" name="id" value="{{.fengxuan.id}}">
+    
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+        </div>
+    </div>
+</form>
+</div>
+
+<script>
+var $;
+    layui.config({base : "js/"}).use(['form','element','layer','jquery'],function(){
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+        var $ = layui.jquery;
+
+        // 判断流量接口服务类型
+        form.on('radio(service)', function(data) {
+
+            if (data.value == 1) {
+                $(".ss").show()
+                $(".nginx").hide()
+            }else if (data.value == 2){
+                $(".ss").show()
+                $(".nginx").hide()
+            } else if (data.value == 3) {
+                $(".nginx").show()
+                $(".ss").hide()
+            } else {
+                $(".ss").show()
+                $(".nginx").hide()
+            }
+        });
+
+        // 验证单选项为必填
+        form.verify({
+            otherReq: function(value,item){
+              var $ = layui.$;
+              var verifyName=$(item).attr('name')
+                  ,verifyType=$(item).attr('type')
+                  ,formElem=$(item).parents('.layui-form')//获取当前所在的form元素，如果存在的话
+                  ,verifyElem=formElem.find('input[name='+verifyName+']')//获取需要校验的元素
+                  ,isTrue= verifyElem.is(':checked')//是否命中校验
+                  ,focusElem = verifyElem.next().find('i.layui-icon');//焦点元素
+
+            if(!isTrue || !value){
+                    //定位焦点
+                    focusElem.css(verifyType=='radio'?{"color":"#FF5722"}:{"border-color":"#FF5722"});
+                    //对非输入框设置焦点
+                    focusElem.first().attr("tabIndex","1").css("outline","0").blur(function() {
+                        focusElem.css(verifyType=='radio'?{"color":""}:{"border-color":""});
+                     }).focus();
+                    return '必填项不能为空';
+                   }
+            }
+        });
+
+        // 提交时调用 url 
+        form.on('submit(sub)', function(data){
+            var form_data = $("form").serialize();
+
+            $.post('{{urlfor "FengxuanController.AjaxSave"}}', form_data, function (out) {
+                if (out.status == 0) {
+                    layer.msg("操作成功, 马上跳转......",{icon: 1, time: 2000},function () {
+                        window.location.reload()
+                        // var index = layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        // layer.close(index); //再执行关闭 
+                        layer.close(layer.index); //再执行关闭 
+                        window.location.href='{{urlfor "FengxuanController.List"}}' //跳转到上一级
+                        // window.parent.location.reload();    //重新加载父页面，进行数据刷新
+                    })
+                } else {
+                    layer.msg(out.message)
+                }
+            }, "json");
+            return false;
+        });
+      
+      //但是，如果你的HTML是动态生成的，自动渲染就会失效
+      //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+      form.render();
+}); 
+</script>

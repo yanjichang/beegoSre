@@ -24,9 +24,6 @@ func Init() {
 	dbname := beego.AppConfig.String("db.name")
 	timezone := beego.AppConfig.String("db.timezone")
 
-	if dbport == "" {
-		dbport = "3306"
-	}
 	dsn := dbuser + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/" + dbname + "?charset=utf8"
 	// fmt.Println(dsn)
 
@@ -35,7 +32,7 @@ func Init() {
 	}
 	orm.RegisterDataBase("default", "mysql", dsn)
 	orm.RegisterModel(new(Auth), new(Role), new(RoleAuth), new(Admin),
-		new(Group), new(Env), new(Code), new(ApiSource), new(ApiDetail), new(ApiPublic), new(Template))
+		new(Fengxuan))
 
 	if beego.AppConfig.String("runmode") == "dev" {
 		orm.Debug = true

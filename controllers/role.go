@@ -63,6 +63,7 @@ func (self *RoleController) AjaxSave() {
 	role.Status = 1
 	auths := strings.TrimSpace(self.GetString("nodes_data"))
 	role_id, _ := self.GetInt("id")
+	
 	if role_id == 0 {
 		//新增
 		role.CreateTime = time.Now().Unix()
@@ -83,6 +84,7 @@ func (self *RoleController) AjaxSave() {
 		}
 		self.ajaxMsg("", MSG_OK)
 	}
+
 	//修改
 	role.Id = role_id
 	role.UpdateTime = time.Now().Unix()

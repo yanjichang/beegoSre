@@ -62,7 +62,7 @@ func (self *LoginController) LoginIn() {
 		}
 	}
 	fmt.Println("self.tpname = ", self.TplName)
-	self.TplName = "login/login.html"
+	self.TplName = "public/login.html"
 
 }
 

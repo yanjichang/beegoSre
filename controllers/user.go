@@ -8,6 +8,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -36,6 +37,7 @@ func (self *UserController) Edit() {
 	row["email"] = Admin.Email
 	self.Data["admin"] = row
 	utils.Che.Set("uid"+strconv.Itoa(self.user.Id), nil, cache.DefaultExpiration)
+	fmt.Println("c user edit row == ", row)
 	self.display()
 }
 
@@ -53,6 +55,7 @@ func (self *UserController) AjaxSave() {
 
 	resetPwd := self.GetString("reset_pwd")
 	if resetPwd == "1" {
+		// 不验证旧密码
 		pwdOld := strings.TrimSpace(self.GetString("password_old"))
 		pwdOldMd5 := libs.Md5([]byte(pwdOld + Admin.Salt))
 		if Admin.Password != pwdOldMd5 {

@@ -88,6 +88,7 @@ func (self *AdminController) Edit() {
 
 func (self *AdminController) AjaxSave() {
 	Admin_id, _ := self.GetInt("id")
+	fmt.Println("c admin ajaxsave admin_id == ", Admin_id)
 	if Admin_id == 0 {
 		Admin := new(models.Admin)
 		Admin.LoginName = strings.TrimSpace(self.GetString("login_name"))
