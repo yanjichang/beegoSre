@@ -223,11 +223,14 @@ func (self *FengxuanController) Deploy_zb() {
 	// self.Data["pageTitle"] = "部署zabbix输出..."
 
 	fengxuan_name := self.GetString("fengxuan_name")
-	fengxuan_name = strings.Replace(fengxuan_name, ",", "','", -1)
 	deploy := self.GetString("deploy")
+
+	//fengxuan_name = strings.Replace(fengxuan_name, ",", "','", -1)
 	// fmt.Println("c fengxuan deploy_zb fengxuan_name == ", fengxuan_name, "deploy == ", deploy)
 
-	re, _ := self.exec_shell("ping www.baidu.com")
+        cmd := "/bin/sh /etc/ansible_bak/fengxuan_deploy_zb.sh " + fengxuan_name + "  " + deploy
+        fmt.Println("c fengxuan deploy_zb cmd == ", cmd)
+	re, _ := self.exec_shell(cmd)
 	// fmt.Printf("re t == %T   v == %v\n", re, re)
 
 	list := make([]map[string]interface{}, len(re))
@@ -243,3 +246,4 @@ func (self *FengxuanController) Deploy_zb() {
 	self.Data["output"] = list
 	self.display("deploy_zb")
 }
+

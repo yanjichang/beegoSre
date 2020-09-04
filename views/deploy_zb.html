@@ -2,10 +2,11 @@
 
         <div style="padding: 18px;">
             <blockquote class="layui-elem-quote">
-                {{.deploy}}
-                正在部署链路: {{.fengxuan_name}} 
-                包含类型: {{.deploy}}
-                <br>
+                ======================================<br>
+                nodeType = {{.deploy}} <br>
+                ips == {{.fengxuan_name}} <br>
+                ======================================<br>
+
                 {{range $k, $v := .output}}
                 <!-- <div class="layui-col-xs4 layui-col-sm5 layui-col-md4"> -->
                     <br>{{$v.line}}

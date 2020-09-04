@@ -259,9 +259,9 @@ func ConvertByte2String(byte []byte, charset Charset) string {
 
 func (self *BaseController) exec_shell(s string) ([]string, error) {
 	//函数返回一个*Cmd，用于使用给出的参数执行name指定的程序
-	// cmd := exec.Command("/bin/bash", "-c", s)
-	// cmd := exec.Command(s)
-	cmd := exec.Command("ping", "www.baidu.com")
+	cmd := exec.Command("/bin/bash", "-c", s)
+	//cmd := exec.Command(s)
+	// cmd := exec.Command("ping", "www.baidu.com")
 
 	fmt.Println("CmdAndChangeDir", cmd.Dir, cmd.Args)
 	// fmt.Printf("执行命令: %s\n", strings.Join(cmd.Args[1:], " "))
